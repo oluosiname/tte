@@ -4,8 +4,6 @@ require 'factory_bot'
 require 'faker'
 require 'pry'
 
-require_relative '../app'
-
 RSpec.configure do |config|
   config.include(FactoryBot::Syntax::Methods)
 
