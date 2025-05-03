@@ -4,6 +4,12 @@ require 'factory_bot'
 require 'faker'
 require 'pry'
 
+require_relative '../lib/models/sailing'
+require_relative '../lib/dtos/sailing_dto'
+require_relative '../lib/services/sailing_data'
+
+require_relative '../lib/console'
+
 RSpec.configure do |config|
   config.include(FactoryBot::Syntax::Methods)
 
