@@ -21,6 +21,12 @@ docker-compose build
 docker-compose run route-calculator
 ```
 
+3. Running tests
+
+```bash
+docker-compose run test
+```
+
 ## Project Structure
 
 - `Dockerfile`: Contains the Docker image configuration
