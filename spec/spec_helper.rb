@@ -7,8 +7,13 @@ require 'pry'
 require_relative '../lib/models/sailing'
 require_relative '../lib/dtos/sailing_dto'
 require_relative '../lib/services/sailing_data'
+require_relative '../lib/services/exchange_rates'
+require_relative '../lib/services/sailing_service'
+require_relative '../lib/strategies/cheapest_direct_strategy'
+require_relative '../lib/services/sailing_cost_calculator'
 
 require_relative '../lib/console'
+require_relative '../lib/filters/sailing_filter'
 
 RSpec.configure do |config|
   config.include(FactoryBot::Syntax::Methods)
