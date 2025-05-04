@@ -42,7 +42,7 @@ RSpec.describe SailingData do
       expect(sailing.origin_port).to eq('CNSHA')
       expect(sailing.destination_port).to eq('NLRTM')
       expect(sailing.sailing_code).to eq('QRST')
-      expect(sailing.rate).to eq('761.96')
+      expect(sailing.rate).to eq(761.96)
       expect(sailing.rate_currency).to eq('EUR')
     end
   end
