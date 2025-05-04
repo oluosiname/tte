@@ -1,50 +1,90 @@
-# Ruby Docker Setup
+# Route Calculator
 
-This is a basic Docker setup for running Ruby applications without Rails.
+A freight forwarding application that finds the best sailing options between ports.
 
 ## Prerequisites
 
 - Docker
 - Docker Compose
 
-## Getting Started
-
-1. Build the Docker image:
+## Setup
 
 ```bash
 docker-compose build
 ```
 
-2. Run the application:
+## Running the Application
+
+The application can be run in three different modes:
+
+### 1. Interactive Mode (Default)
 
 ```bash
-docker-compose run route-calculator
+# Run with interactive prompts
+docker-compose run --rm route-calculator
+
+docker-compose run route-calculator "-i"
 ```
 
-3. Running tests
+You will be prompted to enter:
+
+- Origin port (e.g., CNSHA)
+- Destination port (e.g., NLRTM)
+- Criteria (either 'cheapest-direct' or 'cheapest')
+
+### 2. File Input Mode
 
 ```bash
-docker-compose run test
+# Create an input file
+echo -e "CNSHA\nNLRTM\ncheapest-direct" > input.txt
+
+# Run with input file
+docker-compose run --rm route-calculator "-f input.txt"
 ```
 
-## Project Structure
+The input file should contain exactly 3 lines:
 
-- `Dockerfile`: Contains the Docker image configuration
-- `docker-compose.yml`: Defines the service configuration
-- `Gemfile`: Lists Ruby dependencies
-- `app.rb`: Sample Ruby application
+```text
+CNSHA
+NLRTM
+cheapest-direct
+```
 
-## Adding Dependencies
-
-To add new gems:
-
-1. Add them to the `Gemfile`
-2. Rebuild the Docker image:
+### 3. Help
 
 ```bash
-docker-compose build
+# Show usage information
+docker-compose run --rm route-calculator "--help"
 ```
 
-## Development
+## Running Tests
 
-The project directory is mounted as a volume, so any changes you make to the Ruby files will be immediately available in the container. You don't need to rebuild the image for code changes.
+```bash
+docker-compose run --rm test bundle exec rspec
+```
+
+## Example Output
+
+For successful queries, the output will be JSON formatted:
+
+```json
+[
+  {
+    "origin_port": "CNSHA",
+    "destination_port": "NLRTM",
+    "departure_date": "2022-02-01",
+    "arrival_date": "2022-03-01",
+    "sailing_code": "ABCD",
+    "rate": "500.00",
+    "rate_currency": "USD"
+  }
+]
+```
+
+For errors, you'll receive:
+
+```json
+{
+  "error": "Error message description"
+}
+```

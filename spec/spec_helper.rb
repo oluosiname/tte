@@ -14,6 +14,8 @@ require_relative '../lib/services/sailing_cost_calculator'
 
 require_relative '../lib/console'
 require_relative '../lib/filters/sailing_filter'
+require_relative '../lib/file_parser'
+require_relative '../lib/runner'
 
 RSpec.configure do |config|
   config.include(FactoryBot::Syntax::Methods)
