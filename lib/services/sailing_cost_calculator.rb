@@ -15,4 +15,8 @@ class SailingCostCalculator
 
     sailing.rate * exchange_rate
   end
+
+  def calculate_total_cost(sailings)
+    sailings.sum { |sailing| calculate_cost(sailing) }
+  end
 end

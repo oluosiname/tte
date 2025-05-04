@@ -33,4 +33,33 @@ RSpec.describe SailingCostCalculator do
       end
     end
   end
+
+  describe '#calculate_total_cost' do
+    let(:sailing1) do
+      instance_double(
+        Sailing,
+        rate: BigDecimal('100.00'),
+        rate_currency: 'EUR',
+        departure_date: Date.new(2022, 1, 29),
+      )
+    end
+
+    let(:sailing2) do
+      instance_double(
+        Sailing,
+        rate: BigDecimal('100.00'),
+        rate_currency: 'USD',
+        departure_date: Date.new(2022, 1, 29),
+      )
+    end
+
+    before do
+      allow(sailing2.departure_date).to receive(:strftime).with('%Y-%m-%d').and_return('2022-01-29')
+    end
+
+    it 'sums converted costs of all sailings' do
+      expected = BigDecimal('100.00') + (BigDecimal('100.00') * 0.85)
+      expect(calculator.calculate_total_cost([sailing1, sailing2])).to eq(expected)
+    end
+  end
 end

@@ -14,12 +14,7 @@ class Runner
       begin
         origin, destination, criteria = console.read_input
 
-        result = case criteria
-        when 'cheapest-direct'
-          service.find_cheapest_direct(origin, destination)
-        else
-          raise ArgumentError, "Unknown criteria: #{criteria}"
-        end
+        result = service.find_routes(origin, destination, criteria)
 
         console.write_output(result)
       rescue ArgumentError => e

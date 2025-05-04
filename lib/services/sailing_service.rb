@@ -1,20 +1,30 @@
 # frozen_string_literal: true
 
 require_relative '../strategies/cheapest_direct_strategy'
+require_relative '../strategies/cheapest_sailing_strategy'
 require_relative '../services/sailing_cost_calculator'
 require_relative '../services/exchange_rates'
 require_relative '../filters/sailing_filter'
 
 class SailingService
+  STRATEGIES = {
+    'cheapest-direct' => CheapestDirectStrategy,
+    'cheapest' => CheapestSailingStrategy,
+  }.freeze
+
   def initialize(repository)
     @repository = repository
     @calculator = SailingCostCalculator.new(ExchangeRates.new(repository.exchange_rates))
     @filter = SailingFilter.new(repository.sailings)
   end
 
-  def find_cheapest_direct(origin, destination)
-    sailings = valid_sailings(origin, destination)
-    strategy = CheapestDirectStrategy.new(sailings, @calculator)
+  def find_routes(origin, destination, criteria)
+    strategy_class = STRATEGIES.fetch(criteria) do
+      raise ArgumentError, "Unknown criteria: #{criteria}"
+    end
+
+    filtered_sailings = valid_sailings(origin, destination, criteria)
+    strategy = strategy_class.new(filtered_sailings, @calculator)
     sailings = strategy.find(origin, destination)
 
     format_sailings(sailings)
@@ -22,8 +32,13 @@ class SailingService
 
   private
 
-  def valid_sailings(origin, destination)
-    @filter.direct_sailings(origin, destination)
+  def valid_sailings(origin, destination, criteria)
+    case criteria
+    when 'cheapest-direct'
+      @filter.direct_sailings(origin, destination)
+    when 'cheapest'
+      @filter.all_possible_sailings(origin, destination)
+    end
   end
 
   def format_sailings(sailings)
