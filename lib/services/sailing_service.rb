@@ -2,6 +2,7 @@
 
 require_relative '../strategies/cheapest_direct_strategy'
 require_relative '../strategies/cheapest_sailing_strategy'
+require_relative '../strategies/fastest_sailing_strategy'
 require_relative '../services/sailing_cost_calculator'
 require_relative '../services/exchange_rates'
 require_relative '../filters/sailing_filter'
@@ -10,6 +11,7 @@ class SailingService
   STRATEGIES = {
     'cheapest-direct' => CheapestDirectStrategy,
     'cheapest' => CheapestSailingStrategy,
+    'fastest' => FastestSailingStrategy,
   }.freeze
 
   def initialize(repository)
@@ -23,7 +25,7 @@ class SailingService
       raise ArgumentError, "Unknown criteria: #{criteria}"
     end
 
-    filtered_sailings = valid_sailings(origin, destination, criteria)
+    filtered_sailings = filter_sailings_for_strategy(origin, destination, criteria)
     strategy = strategy_class.new(filtered_sailings, @calculator)
     sailings = strategy.find(origin, destination)
 
@@ -32,11 +34,11 @@ class SailingService
 
   private
 
-  def valid_sailings(origin, destination, criteria)
+  def filter_sailings_for_strategy(origin, destination, criteria)
     case criteria
     when 'cheapest-direct'
       @filter.direct_sailings(origin, destination)
-    when 'cheapest'
+    when 'cheapest', 'fastest'
       @filter.all_possible_sailings(origin, destination)
     end
   end
