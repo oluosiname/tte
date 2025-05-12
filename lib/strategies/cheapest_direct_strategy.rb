@@ -7,7 +7,7 @@ class CheapestDirectStrategy
   end
 
   def find(origin, destination)
-    return if sailings.empty?
+    return [] if sailings.empty?
 
     [sailings.min_by { |sailing| @calculator.calculate_cost(sailing) }]
   end

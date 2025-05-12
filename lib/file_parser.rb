@@ -37,6 +37,6 @@ class FileParser
   end
 
   def valid_criteria?(criteria)
-    ['cheapest-direct', 'cheapest'].include?(criteria)
+    ['cheapest-direct', 'cheapest', 'fastest'].include?(criteria)
   end
 end

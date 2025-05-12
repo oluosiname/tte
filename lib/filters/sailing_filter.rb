@@ -13,28 +13,35 @@ class SailingFilter
   end
 
   def all_possible_sailings(origin, destination)
-    direct = direct_sailings(origin, destination)
-    connecting = connecting_sailings(origin, destination)
-
-    direct.map { |sailing| [sailing] } + connecting
+    find_all_routes(origin, destination)
   end
 
   private
 
-  def connecting_sailings(origin, destination)
-    sailings_from_origin = sailings_from(origin)
-    sailings_to_dest = sailings_to(destination)
+  def find_all_routes(origin, destination, visited = Set.new)
+    routes = []
 
-    # Find ports that appear as both destination of first leg and origin of second leg
-    intermediate_ports = sailings_from_origin.map(&:destination_port) &
-      sailings_to_dest.map(&:origin_port)
+    # Add direct sailings
+    routes += direct_sailings(origin, destination).map { |sailing| [sailing] }
 
-    intermediate_ports.flat_map do |port|
-      first_leg = direct_sailings(origin, port)
-      second_leg = direct_sailings(port, destination)
+    # Find next possible ports
+    next_sailings = sailings_from(origin)
 
-      combine_valid_sailings(first_leg, second_leg)
+    next_sailings.each do |first_sailing|
+      next_port = first_sailing.destination_port
+      next if visited.include?(next_port)
+
+      new_visited = visited + [origin]
+      sub_routes = find_all_routes(next_port, destination, new_visited)
+
+      sub_routes.each do |sub_route|
+        if valid_connection?(first_sailing, sub_route.first)
+          routes << [first_sailing] + sub_route
+        end
+      end
     end
+
+    routes
   end
 
   def sailings_from(origin)
@@ -43,12 +50,6 @@ class SailingFilter
 
   def sailings_to(destination)
     @sailings.select { |sailing| sailing.destination_port == destination }
-  end
-
-  def combine_valid_sailings(first_leg, second_leg)
-    first_leg.product(second_leg).select do |first, second|
-      valid_connection?(first, second)
-    end
   end
 
   def valid_connection?(first, second)
